@@ -3,7 +3,7 @@ import {Dimensions, PixelRatio, Platform} from 'react-native';
 const fontScale = PixelRatio.getFontScale();
 export const {width, height} = Dimensions.get('window');
 export const getFontSize = (size: number) => size / fontScale;
-export const getKey = () => Math.floor(Math.random() * 100000).toString(); //use this only when u need a randome keys on every render
+export const getRandomId = () => Math.floor(Math.random() * 100000).toString(); //use this only when u need a randome keys on every render
 // based on iPhone 8's scale
 const wscale = width / 360;
 const hscale = height / 720;
