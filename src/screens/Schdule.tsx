@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {colors} from '../theme/colors';
 import TextInputComp from '../components/TextInputComp';
@@ -19,17 +19,50 @@ import moment from 'moment';
 import ButtonComp from '../components/ButtonComp';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {keys} from '../utils/keys';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import {Shedules} from '../utils/types';
 const Schdule = () => {
+  const params = useRoute().params;
+  const navigation = useNavigation();
   const [modal, setModal] = useState(false);
   const [data, setData] = useState({date: '', startTime: '', endTime: ''});
   const [name, setName] = useState('');
   const [date, setDate] = useState(new Date());
+  const [isEdit, setIsEdit] = useState(params?.scheduleId ? true : false);
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
-
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [isStartTimeVisible, setIsStartTimeVisible] = useState(false);
   const [isEndTimeVisible, setIsEndTimeVisible] = useState(false);
+  useEffect(() => {
+    if (params) setIsEdit(true);
+    getSheculeData();
+  }, [params]);
+  const getSheculeData = async () => {
+    if (params) {
+      await AsyncStorage.getItem(keys.SCHEDULE).then(async res => {
+        if (res != null) {
+          const shedules_data: Shedules[] = JSON.parse(res);
+          const shedule_of_edit = shedules_data.filter(
+            value => value.id === params?.scheduleId,
+          )[0];
+          setName(shedule_of_edit?.name);
+          setStartTime(shedule_of_edit?.startTime);
+          setEndTime(shedule_of_edit?.endTime);
+          setDate(shedule_of_edit?.date);
+        }
+      });
+    }
+  };
+  const emptyState = () => {
+    setName('');
+    setStartTime('');
+    setEndTime('');
+    setDate(new Date());
+
+    //@ts-ignore
+    navigation.navigate('Home');
+  };
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -63,6 +96,32 @@ const Schdule = () => {
     hideEndTimePicker();
     setEndTime(moment(time).format('HH:MM A'));
   };
+  const onEdit = async () => {
+    const edit_shadule = {
+      id: getRandomId(),
+      date: date,
+      startTime: startTime,
+      endTime: endTime,
+      name: name,
+    };
+    await AsyncStorage.getItem(keys.SCHEDULE).then(async res => {
+      if (res != null) {
+        const shedules_data: Shedules[] = JSON.parse(res);
+        const updated_shedules = shedules_data.map(value => {
+          if (value.id === params?.scheduleId) {
+            return edit_shadule;
+          } else return value;
+        });
+        await AsyncStorage.setItem(
+          keys.SCHEDULE,
+          JSON.stringify(updated_shedules),
+        );
+        setIsEdit(false);
+        emptyState();
+      }
+    });
+  };
+
   const onSubmit = async () => {
     if (startTime == '') {
       Alert.alert('Please select start time');
@@ -79,7 +138,7 @@ const Schdule = () => {
 
     const new_shadule = {
       id: getRandomId(),
-      date: moment(date).format('DD/MM/YYYY'),
+      date: date,
       startTime: startTime,
       endTime: endTime,
       name: name,
@@ -87,22 +146,35 @@ const Schdule = () => {
     await AsyncStorage.getItem(keys.SCHEDULE).then(async res => {
       if (res != null) {
         const shedules_data = JSON.parse(res);
+
         shedules_data.push(new_shadule);
         await AsyncStorage.setItem(
           keys.SCHEDULE,
           JSON.stringify(shedules_data),
         );
+        emptyState();
       } else {
         const shedules_data = [new_shadule];
         await AsyncStorage.setItem(
           keys.SCHEDULE,
           JSON.stringify(shedules_data),
         );
+        emptyState();
       }
     });
   };
   return (
     <View style={styles.container}>
+      <View
+        style={{
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginTop: getHeight(10),
+        }}>
+        <Text style={global_styles.headingText}>
+          {isEdit ? 'Edit Schedule' : 'Add Schedule'}
+        </Text>
+      </View>
       <View
         style={{
           paddingHorizontal: getWidth(10),
@@ -118,7 +190,9 @@ const Schdule = () => {
         />
         <Text style={global_styles.headingText}>{'Date:'}</Text>
         <TouchableOpacity style={styles.date} onPress={showDatePicker}>
-          <Text style={global_styles.subHedingText}>{date.toDateString()}</Text>
+          <Text style={global_styles.subHedingText}>
+            {moment(date).format('DD/MM/YYYY')}
+          </Text>
         </TouchableOpacity>
 
         <Text style={global_styles.headingText}>{'Start Time:'}</Text>
@@ -130,7 +204,10 @@ const Schdule = () => {
           <Text style={global_styles.subHedingText}>{endTime}</Text>
         </TouchableOpacity>
         <View style={{marginTop: getHeight(20)}}>
-          <ButtonComp titleText="Save Details" onPress={onSubmit} />
+          <ButtonComp
+            titleText={'Save Details'}
+            onPress={isEdit ? onEdit : onSubmit}
+          />
         </View>
         <DateTimePickerModal
           isVisible={isDatePickerVisible}

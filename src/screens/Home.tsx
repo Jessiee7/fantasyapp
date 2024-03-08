@@ -4,22 +4,21 @@ import {colors} from '../theme/colors';
 import {getFontSize, getHeight, getWidth} from '../utils/utilities';
 import ButtonComp from '../components/ButtonComp';
 import {Shedules} from '../utils/types';
-import {useFocusEffect} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {keys} from '../utils/keys';
 import {shouldUseActivityState} from 'react-native-screens';
+import moment from 'moment';
 
 const Home = () => {
+  const navigation = useNavigation();
   const [shedules, setShedules] = useState<Shedules[]>([]);
   useFocusEffect(
     useCallback(() => {
       AsyncStorage.getItem(keys.SCHEDULE).then(res => {
         if (res != null) {
           const shedules_data = JSON.parse(res);
-          console.log(shouldUseActivityState, '0990');
           setShedules(shedules_data);
-        } else {
-          console.log('sdflsdjlfjslfjsdlj');
         }
       });
     }, []),
@@ -31,7 +30,10 @@ const Home = () => {
     setShedules(updated_shedules);
     await AsyncStorage.setItem(keys.SCHEDULE, JSON.stringify(updated_shedules));
   };
-  const editShedule = (id: number) => {};
+  const editShedule = (id: number) => {
+    ///@ts-ignore
+    navigation.navigate('Schdule', {scheduleId: id});
+  };
   const renderShedules = useCallback(
     (items: Shedules) => {
       return (
@@ -63,7 +65,7 @@ const Home = () => {
                 color: colors.BLACK,
                 fontWeight: '700',
               }}>
-              {items.date}
+              {moment(items.date).format('DD/MM/YYYY')}
             </Text>
           </View>
           <Text

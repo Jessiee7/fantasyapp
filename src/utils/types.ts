@@ -1,6 +1,6 @@
 export interface Shedules {
   id: number;
-  date: string;
+  date: Date;
   startTime: string;
   endTime: string;
   name: string;
