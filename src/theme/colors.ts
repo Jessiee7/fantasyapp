@@ -2,6 +2,7 @@ export const colors = {
   WHITE: '#fff',
   BLACK: '#000',
   BLUE: '#1D4F91',
+  GRAY_TEXT: '#D3D1DD',
   GRAY_BORDER: 'rgba(23,18,54,0.3)',
   GRAY: '#717171',
   GRAY_BACKGROUNDD: '#D9D9D9',
