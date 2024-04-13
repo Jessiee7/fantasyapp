@@ -14,6 +14,7 @@ import {StyleProp} from 'react-native';
 import {colors} from '../theme/colors';
 import {getFontSize, getHeight, getWidth, width} from '../utils/utilities';
 import {EyeIcon, EyeSlashIcon} from '../theme/icons';
+import {fonts} from '@/theme/fonts';
 interface Props extends TextInputProps {
   textInputStyles?: StyleProp<TextStyle>;
   containerStyles?: StyleProp<ViewStyle>;
@@ -34,7 +35,7 @@ const TextInputComp: React.FC<Props> = ({
         placeholder={placeholder || ''}
         style={[styles.textInput, textInputStyles]}
         secureTextEntry={showPassword}
-        placeholderTextColor={colors.GRAY_TEXT}
+        placeholderTextColor={colors.GRAY_BORDER}
         {...props}
       />
 
@@ -78,5 +79,6 @@ const styles = StyleSheet.create({
     fontSize: getFontSize(16),
     textAlignVertical: 'center',
     alignItems: 'center',
+    fontFamily: fonts.MEDIUM,
   },
 });

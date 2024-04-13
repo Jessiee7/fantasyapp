@@ -9,6 +9,7 @@ import {
 import React from 'react';
 import {colors} from '../theme/colors';
 import {getFontSize, getHeight, height} from '../utils/utilities';
+import {fonts} from '@/theme/fonts';
 interface Props {
   titleText: string;
   disabled?: boolean;
@@ -72,5 +73,6 @@ const styles = StyleSheet.create({
   text: {
     fontSize: getFontSize(16),
     color: colors.WHITE,
+    fontFamily: fonts.MEDIUM,
   },
 });
