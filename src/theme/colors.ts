@@ -1,7 +1,8 @@
 export const colors = {
   WHITE: '#fff',
   BLACK: '#000',
-  BLUE: '#1D4F91',
+  // BLUE: '#1D4F91',
+  BLUE: '#737cfb',
   GRAY_TEXT: '#D3D1DD',
   GRAY_BORDER: 'rgba(23,18,54,0.3)',
   GRAY: '#717171',
@@ -10,4 +11,6 @@ export const colors = {
   LIGHT_BACKGROUND: '#F1F1F1',
   GREEN: '#1D9F39',
   RED: '#E32222',
+  // APP_COLOR: '#448EE4',
+  APP_COLOR: '#737cfb',
 };
